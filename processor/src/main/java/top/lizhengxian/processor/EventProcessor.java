@@ -33,7 +33,9 @@ public class EventProcessor extends AbstractProcessor{
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-
+        for (TypeElement annotation : annotations) {
+            System.out.println(annotation);
+        }
         return true;
     }
 }
