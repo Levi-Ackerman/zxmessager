@@ -22,6 +22,10 @@ public class MainActivity extends AppCompatActivity {
         set.add("5");
     }
 
+    @Subscribe(1)
+    public void on(int i){
+
+    }
 //    @Subscribe(1)
     @Override
     protected void onResume() {
