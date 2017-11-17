@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -27,7 +28,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
 import top.lizhengxian.event_lib.DescriptionInfo;
-import top.lizhengxian.event_lib.ISignalMap;
+import top.lizhengxian.event_lib.IContacts;
 import top.lizhengxian.event_lib.Subscribe;
 
 import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
@@ -39,15 +40,16 @@ public class EventProcessor extends AbstractProcessor {
     static final String SUBSCRIBE = "top.lizhengxian.event_lib.Subscribe";
     private static final String INDEX_PACKAGE = "IndexPackage";
     public static final String FIELD_MAP = "mMap";
-    public static final String GENERATE_CLASS_NAME = "SignalMap";
+    public static final String GENERATE_CLASS_NAME = "Contacts";
 
     private String mPackageName;
     private Set<DescriptionInfo> mDescs = new HashSet<>();
+
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        mPackageName = processingEnv.getOptions().getOrDefault(INDEX_PACKAGE,null);
-        if (mPackageName == null || "".equals(mPackageName.trim())){
+        mPackageName = processingEnv.getOptions().getOrDefault(INDEX_PACKAGE, null);
+        if (mPackageName == null || "".equals(mPackageName.trim())) {
             throw new RuntimeException("IndexPackage can't be null");
         }
     }
@@ -60,22 +62,29 @@ public class EventProcessor extends AbstractProcessor {
                 .map(method -> (ExecutableElement) method)
                 .forEach(this::initDesc);
 
-        FieldSpec map = FieldSpec.builder(ParameterizedTypeName.get(HashMap.class,Integer.class,DescriptionInfo.class), FIELD_MAP)
+        FieldSpec map = FieldSpec.builder(ParameterizedTypeName.get(HashMap.class, Integer.class, DescriptionInfo.class), FIELD_MAP)
                 .addModifiers(Modifier.PRIVATE)
                 .build();
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
-        constructorBuilder.addCode(FIELD_MAP+" = new HashMap<>();\n");
-        mDescs.stream().forEach(desc->{
-            constructorBuilder.addStatement(String.format(Locale.US,"%s.put(%d,new %s(%d,\"%s\",\"%s\",\"%s\"))",
-                    FIELD_MAP,desc.id,DescriptionInfo.class.getCanonicalName(),desc.id,desc.className,desc.methodName,desc.paramName));
-        });
+        constructorBuilder.addCode(FIELD_MAP + " = new HashMap<>();\n");
+        mDescs.forEach(desc ->
+                constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,\"%s\",\"%s\",\"%s\"))",
+                        FIELD_MAP, desc.id, DescriptionInfo.class.getCanonicalName(), desc.id, desc.className, desc.methodName, desc.paramName)));
+
+
+        MethodSpec getContactMapMethod = MethodSpec.methodBuilder("getContactsMap")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ParameterizedTypeName.get(Map.class, Integer.class, DescriptionInfo.class))
+                .addCode("return " + FIELD_MAP + ";\n").build();
         TypeSpec indexClass = TypeSpec.classBuilder(GENERATE_CLASS_NAME)
-                .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
+                .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
                 .addField(map)
-                .addSuperinterface(ISignalMap.class)
+                .addSuperinterface(IContacts.class)
                 .addMethod(constructorBuilder.build())
+                .addMethod(getContactMapMethod)
                 .build();
-        JavaFile file = JavaFile.builder(mPackageName,indexClass).build();
+        JavaFile file = JavaFile.builder(mPackageName, indexClass).build();
         try {
             file.writeTo(processingEnv.getFiler());
         } catch (IOException e) {
@@ -87,11 +96,12 @@ public class EventProcessor extends AbstractProcessor {
 
     /**
      * fill description object with method information
+     *
      * @param method
      */
-    private void initDesc(ExecutableElement method){
+    private void initDesc(ExecutableElement method) {
         List<? extends VariableElement> params = method.getParameters();
-        if (params.size()!=1){
+        if (params.size() != 1) {
             throw new RuntimeException("@Subscribe can only use for method with only 1 parameter");
         }
         DescriptionInfo desc = new DescriptionInfo();
