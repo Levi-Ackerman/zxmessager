@@ -4,13 +4,14 @@ import com.google.auto.service.AutoService;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -26,6 +27,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
 import top.lizhengxian.event_lib.DescriptionInfo;
+import top.lizhengxian.event_lib.ISignalMap;
 import top.lizhengxian.event_lib.Subscribe;
 
 import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
@@ -58,10 +60,11 @@ public class EventProcessor extends AbstractProcessor {
                 .map(method -> (ExecutableElement) method)
                 .forEach(this::initDesc);
 
-        FieldSpec map = FieldSpec.builder(Map.class, FIELD_MAP)
+        FieldSpec map = FieldSpec.builder(ParameterizedTypeName.get(HashMap.class,Integer.class,DescriptionInfo.class), FIELD_MAP)
                 .addModifiers(Modifier.PRIVATE)
                 .build();
-        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder();
+        MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
+        constructorBuilder.addCode(FIELD_MAP+" = new HashMap<>();\n");
         mDescs.stream().forEach(desc->{
             constructorBuilder.addStatement(String.format(Locale.US,"%s.put(%d,new %s(%d,\"%s\",\"%s\",\"%s\"))",
                     FIELD_MAP,desc.id,DescriptionInfo.class.getCanonicalName(),desc.id,desc.className,desc.methodName,desc.paramName));
@@ -69,6 +72,7 @@ public class EventProcessor extends AbstractProcessor {
         TypeSpec indexClass = TypeSpec.classBuilder(GENERATE_CLASS_NAME)
                 .addModifiers(Modifier.PUBLIC,Modifier.FINAL)
                 .addField(map)
+                .addSuperinterface(ISignalMap.class)
                 .addMethod(constructorBuilder.build())
                 .build();
         JavaFile file = JavaFile.builder(mPackageName,indexClass).build();
