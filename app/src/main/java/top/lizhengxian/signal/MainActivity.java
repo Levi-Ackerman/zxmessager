@@ -11,17 +11,11 @@ import butterknife.OnClick;
 import top.lizhengxian.event_lib.ZxMessager;
 
 public class MainActivity extends AppCompatActivity {
-    @BindView(R.id.btn) protected Button mBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
         ZxMessager.withActivity(this);
-        ButterKnife.bind(this);
-    }
-
-    @OnClick(R.id.btn)
-    protected void onClick(View view){
-        ZxMessager.post(1,"Hello world!");
+        ZxMessager.post(ID.START,"Hello");
     }
 }

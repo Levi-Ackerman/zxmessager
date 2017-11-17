@@ -35,6 +35,7 @@ public class ZxMessager {
 
     public static void withActivity(Activity activity){
         getInstance().mConfig.setActivity(activity);
+
     }
 
     private static ZxMessager getInstance() {
