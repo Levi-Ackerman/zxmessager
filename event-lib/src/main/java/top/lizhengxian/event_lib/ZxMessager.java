@@ -1,6 +1,7 @@
 package top.lizhengxian.event_lib;
 
 
+import android.app.Activity;
 import android.util.SparseArray;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,16 +19,22 @@ public class ZxMessager {
         mDescInfo = new HashMap<>();
         mMethod = new SparseArray<>();
         mClass = new HashMap<>();
-        mOwnObj = new SparseArray<>();
+        mControllers = new SparseArray<>();
+        mConfig = new Config();
     }
 
     private Map<Integer, DescriptionInfo> mDescInfo;
     private SparseArray<Method> mMethod;
-    private SparseArray<Object> mOwnObj;
+    private SparseArray<BaseController> mControllers;
     private Map<String, Class> mClass;
+    private Config mConfig;
 
     public static void installContact(IContacts contacts) {
         getInstance().mDescInfo.putAll(contacts.getContactsMap());
+    }
+
+    public static void withActivity(Activity activity){
+        getInstance().mConfig.setActivity(activity);
     }
 
     private static ZxMessager getInstance() {
@@ -36,7 +43,7 @@ public class ZxMessager {
 
     public static void post(int id, Object data) {
         Method method = getInstance().getMethod(id);
-        Object ownObj = getInstance().getOwnObj(id);
+        Object ownObj = getInstance().getController(id);
         try {
             method.invoke(ownObj, data);
         } catch (IllegalAccessException e) {
@@ -62,19 +69,20 @@ public class ZxMessager {
         return method;
     }
 
-    private Object getOwnObj(int id) {
-        Object ownObj = mOwnObj.get(id);
-        if (ownObj == null) {
+    private BaseController getController(int id) {
+        BaseController controller = mControllers.get(id);
+        if (controller == null) {
             try {
-                ownObj = getClass(mDescInfo.get(id).className).newInstance();
-                mOwnObj.put(id, ownObj);
+                controller = (BaseController) getClass(mDescInfo.get(id).className).newInstance();
+                controller.setActivity(mConfig.getBaseActivity());
+                mControllers.put(id, controller);
             } catch (InstantiationException e) {
                 e.printStackTrace();
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
         }
-        return ownObj;
+        return controller;
     }
 
     private Class getClass(String className) {

@@ -16,8 +16,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ZxMessager.withActivity(this);
         ButterKnife.bind(this);
-
     }
 
     @OnClick(R.id.btn)

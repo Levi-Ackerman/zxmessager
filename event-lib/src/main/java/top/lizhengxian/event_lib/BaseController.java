@@ -6,14 +6,14 @@ import android.app.Activity;
 import top.lizhengxian.event_lib.window.Window;
 
 public abstract class BaseController {
-    private Config mConfig = new Config();
+    private Activity mActivity;
 
     public void setActivity(Activity activity){
-        mConfig.setActivity(activity);
+        mActivity = activity;
     }
 
     public void pushWindow(Window window) {
-        mConfig.getBaseActivity().getFragmentManager()
+        mActivity.getFragmentManager()
                 .beginTransaction()
                 .replace(android.R.id.content, window)
                 .addToBackStack(null)
@@ -21,6 +21,6 @@ public abstract class BaseController {
     }
 
     public void popWindow() {
-        mConfig.getBaseActivity().getFragmentManager().popBackStack();
+        mActivity.getFragmentManager().popBackStack();
     }
 }
