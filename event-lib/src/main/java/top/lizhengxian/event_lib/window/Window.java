@@ -8,9 +8,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class Window extends Fragment {
+public abstract class Window extends Fragment implements IWindow {
     private View mContentView;
-    protected abstract View onCreateContent();
+    public abstract View onCreateContent();
 
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -21,7 +21,7 @@ public abstract class Window extends Fragment {
         return mContentView;
     }
 
-    public View getmContentView() {
+    public View getContent() {
         return mContentView;
     }
 
