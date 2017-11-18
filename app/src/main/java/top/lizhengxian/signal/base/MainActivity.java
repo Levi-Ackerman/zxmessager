@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import top.lizhengxian.event_lib.ZxMessager;
 import top.lizhengxian.signal.Contacts;
-import top.lizhengxian.signal.base.ID;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,4 +15,6 @@ public class MainActivity extends AppCompatActivity {
         ZxMessager.withActivity(this);
         ZxMessager.post(ID.START,"Hello");
     }
+
+
 }
