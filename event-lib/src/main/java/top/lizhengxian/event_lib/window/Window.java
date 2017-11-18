@@ -13,8 +13,15 @@ public abstract class Window extends Fragment implements IWindow {
     private View mContentView;
     private View mTitleView;
     private LinearLayout mRootLayout;
+    private final String mId;
+
     public abstract View onCreateContent();
+
     public abstract View onCreateTitle();
+
+    protected Window() {
+        mId = WindowUtil.genStackTag();
+    }
 
     @Override
     public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -24,10 +31,10 @@ public abstract class Window extends Fragment implements IWindow {
             mContentView = onCreateContent();
             mRootLayout = new LinearLayout(getContext());
             mRootLayout.setOrientation(LinearLayout.VERTICAL);
-            if (mTitleView!=null){
+            if (mTitleView != null) {
                 mRootLayout.addView(mTitleView);
             }
-            if (mContentView!=null){
+            if (mContentView != null) {
                 mRootLayout.addView(mContentView);
             }
         }
@@ -38,11 +45,16 @@ public abstract class Window extends Fragment implements IWindow {
         return mContentView;
     }
 
-    public View getTitleView(){
+    public View getTitleView() {
         return mTitleView;
     }
 
-    protected Context getContext(){
+    protected Context getContext() {
         return getActivity();
+    }
+
+    @Override
+    public String getStackTag() {
+        return mId;
     }
 }

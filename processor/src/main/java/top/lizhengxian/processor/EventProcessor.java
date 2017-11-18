@@ -101,11 +101,16 @@ public class EventProcessor extends AbstractProcessor {
      */
     private void initDesc(ExecutableElement method) {
         List<? extends VariableElement> params = method.getParameters();
-        if (params.size() != 1) {
-            throw new RuntimeException("@Subscribe can only use for method with only 1 parameter");
+        String paramName;
+        if (params.size() == 0) {
+            paramName = null;
+        } else if (params.size() == 1) {
+            paramName = params.get(0).asType().toString();
+        } else {
+            throw new RuntimeException("@Subscribe can only use for method with none or only 1 parameter");
         }
         DescriptionInfo desc = new DescriptionInfo();
-        desc.paramName = params.get(0).asType().toString();
+        desc.paramName = paramName;
         desc.id = method.getAnnotation(Subscribe.class).value();
         desc.className = method.getEnclosingElement().asType().toString();
         desc.methodName = method.getSimpleName().toString();
