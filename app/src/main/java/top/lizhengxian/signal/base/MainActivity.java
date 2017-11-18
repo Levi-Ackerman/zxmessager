@@ -13,6 +13,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ZxMessager.installContact(new Contacts());
         ZxMessager.withActivity(this);
-        ZxMessager.post(ID.START,"Hello");
+        ZxMessager.post(ID.START);
     }
 }

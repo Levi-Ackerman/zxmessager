@@ -2,6 +2,7 @@ package top.lizhengxian.event_lib.zx;
 
 
 import android.app.Activity;
+import android.text.TextUtils;
 import android.util.SparseArray;
 
 import java.lang.reflect.Method;
@@ -28,6 +29,9 @@ class ZxMethodParser {
     }
 
     private Class getClass(String className) {
+        if (TextUtils.isEmpty(className)){
+            return null;
+        }
         Class clazz = mClass.get(className);
         if (clazz == null) {
             try {
@@ -54,7 +58,11 @@ class ZxMethodParser {
             try {
                 Class ownClass = getClass(info.className);
                 Class argClass = getClass(info.paramName);
-                method = ownClass.getMethod(info.methodName, argClass);
+                if (argClass == null){
+                    method = ownClass.getMethod(info.methodName);
+                }else {
+                    method = ownClass.getMethod(info.methodName, argClass);
+                }
                 mMethod.put(id, method);
             } catch (NoSuchMethodException e) {
                 e.printStackTrace();
@@ -81,5 +89,4 @@ class ZxMethodParser {
         }
         return controller;
     }
-
 }

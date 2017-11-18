@@ -9,8 +9,8 @@ import top.lizhengxian.signal.base.ID;
 
 public class HomeController extends BaseController{
     @Subscribe(ID.START)
-    public void start(String name){
-        Log.e("lee..",name);
+    public void start(){
+        Log.e("lee..","sha mo");
         pushWindow(new HomeWindow());
     }
 }

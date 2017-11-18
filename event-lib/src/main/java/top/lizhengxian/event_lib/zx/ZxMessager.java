@@ -19,6 +19,7 @@ public class ZxMessager {
         mConfig = new Config();
         mParser = new ZxMethodParser();
     }
+
     private static ZxMessager getInstance() {
         return Holder.INSTANCE;
     }
@@ -30,17 +31,24 @@ public class ZxMessager {
         getInstance().mParser.withContact(contacts);
     }
 
-    public static void withActivity(Activity activity){
+    public static void withActivity(Activity activity) {
         getInstance().mConfig.setActivity(activity);
         getInstance().mParser.withActivity(activity);
     }
 
+    public static void post(int id) {
+        post(id, null);
+    }
 
     public static void post(int id, Object data) {
         Method method = getInstance().mParser.getMethod(id);
         Object ownObj = getInstance().mParser.getController(id);
         try {
-            method.invoke(ownObj, data);
+            if (data == null) {
+                method.invoke(ownObj);
+            } else {
+                method.invoke(ownObj, data);
+            }
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
