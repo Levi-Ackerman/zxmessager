@@ -29,7 +29,7 @@ import javax.lang.model.element.VariableElement;
 
 import top.lizhengxian.event_lib.DescriptionInfo;
 import top.lizhengxian.event_lib.IContacts;
-import top.lizhengxian.event_lib.Subscribe;
+import top.lizhengxian.event_lib.anno.Subscribe;
 
 import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
 
@@ -37,7 +37,7 @@ import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
 @SupportedAnnotationTypes(SUBSCRIBE)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
 public class EventProcessor extends AbstractProcessor {
-    static final String SUBSCRIBE = "top.lizhengxian.event_lib.Subscribe";
+    static final String SUBSCRIBE = "top.lizhengxian.event_lib.anno.Subscribe";
     private static final String INDEX_PACKAGE = "IndexPackage";
     public static final String FIELD_MAP = "mMap";
     public static final String GENERATE_CLASS_NAME = "Contacts";
@@ -68,8 +68,8 @@ public class EventProcessor extends AbstractProcessor {
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
         constructorBuilder.addCode(FIELD_MAP + " = new HashMap<>();\n");
         mDescs.forEach(desc ->
-                constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,\"%s\",\"%s\",\"%s\"))",
-                        FIELD_MAP, desc.id, DescriptionInfo.class.getCanonicalName(), desc.id, desc.className, desc.methodName, desc.paramName)));
+                constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,%d,\"%s\",\"%s\",\"%s\"))",
+                        FIELD_MAP, desc.id, DescriptionInfo.class.getCanonicalName(), desc.id, desc.threadType, desc.className, desc.methodName, desc.paramName)));
 
 
         MethodSpec getContactMapMethod = MethodSpec.methodBuilder("getContactsMap")
@@ -109,9 +109,11 @@ public class EventProcessor extends AbstractProcessor {
         } else {
             throw new RuntimeException("@Subscribe can only use for method with none or only 1 parameter");
         }
+        Subscribe subscribe = method.getAnnotation(Subscribe.class);
         DescriptionInfo desc = new DescriptionInfo();
         desc.paramName = paramName;
-        desc.id = method.getAnnotation(Subscribe.class).value();
+        desc.id = subscribe.id();
+        desc.threadType = subscribe.thread();
         desc.className = method.getEnclosingElement().asType().toString();
         desc.methodName = method.getSimpleName().toString();
         mDescs.add(desc);

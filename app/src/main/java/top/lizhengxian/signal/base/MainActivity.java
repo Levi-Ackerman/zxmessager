@@ -13,6 +13,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ZxMessager.installContact(new Contacts());
         ZxMessager.withActivity(this);
-        ZxMessager.post(ID.START);
+        Object result = ZxMessager.post(ID.START);
+        if (result instanceof String){
+            System.out.println(result);
+        }
     }
 }

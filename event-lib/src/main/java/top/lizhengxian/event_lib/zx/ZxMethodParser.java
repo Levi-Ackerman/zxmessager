@@ -89,4 +89,8 @@ class ZxMethodParser {
         }
         return controller;
     }
+
+    public int getThreadType(int id) {
+        return mDescInfo.get(id).threadType;
+    }
 }
