@@ -16,17 +16,24 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
+import javax.tools.Diagnostic;
 
+import top.lizhengxian.event_lib.BaseController;
 import top.lizhengxian.event_lib.DescriptionInfo;
 import top.lizhengxian.event_lib.IContacts;
 import top.lizhengxian.event_lib.anno.Subscribe;
@@ -39,11 +46,14 @@ import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
 public class EventProcessor extends AbstractProcessor {
     static final String SUBSCRIBE = "top.lizhengxian.event_lib.anno.Subscribe";
     private static final String INDEX_PACKAGE = "IndexPackage";
-    public static final String FIELD_MAP = "mMap";
-    public static final String GENERATE_CLASS_NAME = "Contacts";
+    private static final String FIELD_MAP = "mMap";
+    private static final String GENERATE_CLASS_NAME = "Contacts";
 
     private String mPackageName;
     private Set<DescriptionInfo> mDescs = new HashSet<>();
+    private Types mTypeUtils;
+    private Elements mElementUtils;
+    private Messager mMessager;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -52,6 +62,9 @@ public class EventProcessor extends AbstractProcessor {
         if (mPackageName == null || "".equals(mPackageName.trim())) {
             throw new RuntimeException("IndexPackage can't be null");
         }
+        mTypeUtils = processingEnv.getTypeUtils();
+        mElementUtils = processingEnv.getElementUtils();
+        mMessager = processingEnv.getMessager();
     }
 
     @Override
@@ -105,16 +118,25 @@ public class EventProcessor extends AbstractProcessor {
         if (params.size() == 0) {
             paramName = "";
         } else if (params.size() == 1) {
-            paramName = params.get(0).asType().toString();
+            TypeMirror mirror = params.get(0).asType();
+            paramName = mirror.toString();
         } else {
             throw new RuntimeException("@Subscribe can only use for method with none or only 1 parameter");
         }
+
+        TypeMirror ctrlMirror =  method.getEnclosingElement().asType();
+        TypeMirror baseCtrlTypeMirror = mElementUtils.getTypeElement(BaseController.class.getCanonicalName()).asType();
+        if(!mTypeUtils.isAssignable(ctrlMirror,baseCtrlTypeMirror)){
+            mMessager.printMessage(Diagnostic.Kind.ERROR,String.format(Locale.US,"%s is not subclass of %s",ctrlMirror.toString(),baseCtrlTypeMirror.toString()));
+        }
+        String className = ctrlMirror.toString();
+
         Subscribe subscribe = method.getAnnotation(Subscribe.class);
         DescriptionInfo desc = new DescriptionInfo();
         desc.paramName = paramName;
         desc.id = subscribe.id();
         desc.threadType = subscribe.thread();
-        desc.className = method.getEnclosingElement().asType().toString();
+        desc.className = className;
         desc.methodName = method.getSimpleName().toString();
         mDescs.add(desc);
     }
