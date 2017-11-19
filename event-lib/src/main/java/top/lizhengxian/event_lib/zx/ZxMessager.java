@@ -26,6 +26,14 @@ public class ZxMessager {
         return Holder.INSTANCE;
     }
 
+    private boolean mDebuggable = false;
+    public static boolean debuggable(){
+        return getInstance().mDebuggable;
+    }
+    public static void setDebuggable(boolean debuggable){
+        getInstance().mDebuggable = debuggable;
+    }
+
     private Config mConfig;
     private ZxMethodParser mParser;
 

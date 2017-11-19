@@ -7,4 +7,4 @@
     ~~ 4. 合并初始化方法，只留一个初始化方法 ~~ 
     5. 一对多Notify
     ~~ 6. int 用 Integer代替 ~~
-    7. DebugMode输出日志
+    ~~ 7. DebugMode输出日志 ~~
