@@ -103,7 +103,7 @@ public class EventProcessor extends AbstractProcessor {
         List<? extends VariableElement> params = method.getParameters();
         String paramName;
         if (params.size() == 0) {
-            paramName = null;
+            paramName = "";
         } else if (params.size() == 1) {
             paramName = params.get(0).asType().toString();
         } else {
