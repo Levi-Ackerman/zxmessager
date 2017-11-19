@@ -12,6 +12,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ZxMessager.init(this, new Contacts());
-        ZxMessager.post(ID.START);
+        ZxMessager.post(ID.START,1);
     }
 }
