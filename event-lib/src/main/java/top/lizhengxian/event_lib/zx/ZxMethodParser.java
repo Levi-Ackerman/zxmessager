@@ -53,6 +53,10 @@ class ZxMethodParser {
         return method;
     }
 
+    Description getDescription(int id){
+        return mDesc.get(id);
+    }
+
     BaseController getController(int id) {
         BaseController controller = mControllers.get(id);
         if (controller == null) {

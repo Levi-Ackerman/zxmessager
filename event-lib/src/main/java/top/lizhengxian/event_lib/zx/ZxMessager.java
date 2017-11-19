@@ -7,9 +7,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import top.lizhengxian.event_lib.Config;
+import top.lizhengxian.event_lib.Description;
 import top.lizhengxian.event_lib.IContacts;
 import top.lizhengxian.event_lib.anno.ThreadMode;
 import top.lizhengxian.event_lib.interf.FieldRunnable;
+import top.lizhengxian.event_lib.util.AssertUtil;
 
 public class ZxMessager {
 
@@ -27,10 +29,12 @@ public class ZxMessager {
     }
 
     private boolean mDebuggable = false;
-    public static boolean debuggable(){
+
+    public static boolean debuggable() {
         return getInstance().mDebuggable;
     }
-    public static void setDebuggable(boolean debuggable){
+
+    public static void setDebuggable(boolean debuggable) {
         getInstance().mDebuggable = debuggable;
     }
 
@@ -48,6 +52,9 @@ public class ZxMessager {
     }
 
     public static Object post(int id, Object data) {
+        if (debuggable()) {
+            check(id, data);
+        }
         final Method method = getInstance().mParser.getMethod(id);
         final Object ownObj = getInstance().mParser.getController(id);
         ThreadMode threadMode = getInstance().mParser.getThreadType(id);
@@ -69,5 +76,10 @@ public class ZxMessager {
         };
         ZxExecutor.execute(threadMode, runnable);
         return runnable.getData();
+    }
+
+    private static void check(int id, Object data) {
+        Description description = getInstance().mParser.getDescription(id);
+        AssertUtil.assertTrue(data == null ^ description.paramClass == null, "The parameters number must be equal between post and subscribe");
     }
 }
