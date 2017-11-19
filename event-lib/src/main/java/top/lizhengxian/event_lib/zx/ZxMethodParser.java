@@ -2,7 +2,6 @@ package top.lizhengxian.event_lib.zx;
 
 
 import android.app.Activity;
-import android.text.TextUtils;
 import android.util.SparseArray;
 
 import java.lang.reflect.Method;
@@ -12,7 +11,7 @@ import java.util.Map;
 import top.lizhengxian.event_lib.BaseController;
 import top.lizhengxian.event_lib.Description;
 import top.lizhengxian.event_lib.IContacts;
-import top.lizhengxian.event_lib.anno.Thread;
+import top.lizhengxian.event_lib.anno.ThreadMode;
 
 class ZxMethodParser {
 
@@ -73,7 +72,7 @@ class ZxMethodParser {
         return controller;
     }
 
-    public Thread getThreadType(int id) {
-        return mDesc.get(id).threadType;
+    public ThreadMode getThreadType(int id) {
+        return mDesc.get(id).mThreadMode;
     }
 }

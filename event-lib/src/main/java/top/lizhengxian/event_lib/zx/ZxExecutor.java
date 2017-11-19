@@ -8,7 +8,7 @@ import android.os.Looper;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-import top.lizhengxian.event_lib.anno.Thread;
+import top.lizhengxian.event_lib.anno.ThreadMode;
 
 public class ZxExecutor {
     private static class Holder {
@@ -29,11 +29,11 @@ public class ZxExecutor {
     private Executor mBackgroundExecutor;
     private Executor mIOExecutor;
 
-    public static void execute(Thread threadType, Runnable runnable) {
+    public static void execute(ThreadMode threadMode, Runnable runnable) {
         if (runnable == null) {
             return;
         }
-        switch (threadType) {
+        switch (threadMode) {
             case SYNC:
                 runnable.run();
                 break;

@@ -1,11 +1,11 @@
 package top.lizhengxian.event_lib;
 
 
-import top.lizhengxian.event_lib.anno.Thread;
+import top.lizhengxian.event_lib.anno.ThreadMode;
 
 public class Description {
     public int id;
-    public Thread threadType;
+    public ThreadMode mThreadMode;
     public Class ownClass;
     public String methodName;
     public Class paramClass;
@@ -13,9 +13,9 @@ public class Description {
     public Description() {
     }
 
-    public Description(int id, Thread threadType, Class ownClass, String methodName, Class paramClass) {
+    public Description(int id, ThreadMode threadMode, Class ownClass, String methodName, Class paramClass) {
         this.id = id;
-        this.threadType = threadType;
+        this.mThreadMode = threadMode;
         this.ownClass = ownClass;
         this.methodName = methodName;
         this.paramClass = paramClass;
@@ -25,7 +25,7 @@ public class Description {
     public String toString() {
         return "Description{" +
                 "id=" + id +
-                ", threadType=" + threadType +
+                ", mThreadMode=" + mThreadMode +
                 ", ownClass='" + ownClass + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", paramClass='" + paramClass + '\'' +

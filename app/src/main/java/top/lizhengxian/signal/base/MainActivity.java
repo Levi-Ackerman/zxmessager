@@ -11,8 +11,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ZxMessager.installContact(new Contacts());
-        ZxMessager.withActivity(this);
+        ZxMessager.init(this, new Contacts());
         ZxMessager.post(ID.START);
     }
 }

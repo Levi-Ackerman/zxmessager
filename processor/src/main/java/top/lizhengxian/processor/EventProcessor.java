@@ -36,7 +36,7 @@ import top.lizhengxian.event_lib.BaseController;
 import top.lizhengxian.event_lib.Description;
 import top.lizhengxian.event_lib.IContacts;
 import top.lizhengxian.event_lib.anno.Subscribe;
-import top.lizhengxian.event_lib.anno.Thread;
+import top.lizhengxian.event_lib.anno.ThreadMode;
 
 import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
 
@@ -81,7 +81,7 @@ public class EventProcessor extends AbstractProcessor {
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
         constructorBuilder.addCode(FIELD_MAP + " = new HashMap<>();\n");
         mDescs.forEach(desc -> {
-            String threadName = Thread.class.getCanonicalName()+"."+desc.threadName;
+            String threadName = ThreadMode.class.getCanonicalName()+"."+desc.threadName;
             String ownClass = desc.className+".class";
             String paramClass = desc.paramName == null?"null":desc.paramName+".class";
             constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,%s,%s,\"%s\",%s))",

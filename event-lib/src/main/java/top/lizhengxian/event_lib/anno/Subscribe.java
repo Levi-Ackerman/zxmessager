@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface Subscribe {
     int id();
-    Thread thread() default Thread.SYNC;
+    ThreadMode thread() default ThreadMode.SYNC;
 }

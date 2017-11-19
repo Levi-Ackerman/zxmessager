@@ -2,15 +2,13 @@ package top.lizhengxian.event_lib.zx;
 
 
 import android.app.Activity;
-import android.os.Handler;
-import android.os.HandlerThread;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import top.lizhengxian.event_lib.Config;
 import top.lizhengxian.event_lib.IContacts;
-import top.lizhengxian.event_lib.anno.Thread;
+import top.lizhengxian.event_lib.anno.ThreadMode;
 import top.lizhengxian.event_lib.interf.FieldRunnable;
 
 public class ZxMessager {
@@ -22,9 +20,6 @@ public class ZxMessager {
     private ZxMessager() {
         mConfig = new Config();
         mParser = new ZxMethodParser();
-        HandlerThread thread = new HandlerThread("ZxMessager");
-        thread.start();
-        mMsgHandler = new Handler(thread.getLooper());
     }
 
     private static ZxMessager getInstance() {
@@ -33,13 +28,9 @@ public class ZxMessager {
 
     private Config mConfig;
     private ZxMethodParser mParser;
-    private Handler mMsgHandler;
 
-    public static void installContact(IContacts contacts) {
+    public static void init(Activity activity, IContacts contacts) {
         getInstance().mParser.withContact(contacts);
-    }
-
-    public static void withActivity(Activity activity) {
         getInstance().mConfig.setActivity(activity);
         getInstance().mParser.withActivity(activity);
     }
@@ -51,7 +42,7 @@ public class ZxMessager {
     public static Object post(int id, Object data) {
         final Method method = getInstance().mParser.getMethod(id);
         final Object ownObj = getInstance().mParser.getController(id);
-        Thread threadType = getInstance().mParser.getThreadType(id);
+        ThreadMode threadMode = getInstance().mParser.getThreadType(id);
         FieldRunnable runnable = new FieldRunnable() {
             @Override
             public void run() {
@@ -68,7 +59,7 @@ public class ZxMessager {
                 }
             }
         };
-        ZxExecutor.execute(threadType, runnable);
+        ZxExecutor.execute(threadMode, runnable);
         return runnable.getData();
     }
 }

@@ -1,6 +1,6 @@
 package top.lizhengxian.event_lib.anno;
 
 
-public enum Thread {
+public enum ThreadMode {
     SYNC, BACKGROUD, MAIN, IO
 }
