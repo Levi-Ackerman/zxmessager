@@ -37,14 +37,14 @@ class ZxMethodParser {
     Method getMethod(int id) {
         Method method = mMethod.get(id);
         if (method == null) {
-            Description info = mDesc.get(id);
+            Description desc = mDesc.get(id);
             try {
-                Class ownClass = info.ownClass;
-                Class argClass = info.paramClass;
+                Class ownClass = desc.ownClass;
+                Class argClass = desc.paramClass;
                 if (argClass == null){
-                    method = ownClass.getMethod(info.methodName);
+                    method = ownClass.getMethod(desc.methodName);
                 }else {
-                    method = ownClass.getMethod(info.methodName, argClass);
+                    method = ownClass.getMethod(desc.methodName, argClass);
                 }
                 mMethod.put(id, method);
             } catch (NoSuchMethodException e) {
