@@ -12,7 +12,7 @@ public class HomeController extends BaseController {
     @Subscribe(id = ID.START,thread = Thread.MAIN)
     public String start() {
         Log.e("lee..", "sha mo");
-        pushWindow(new HomeWindow());
+        pushWindow(new HomeWindow(),false);
         return "Success";
     }
 }

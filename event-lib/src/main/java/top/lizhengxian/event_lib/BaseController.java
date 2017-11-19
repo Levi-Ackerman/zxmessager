@@ -9,24 +9,33 @@ import top.lizhengxian.event_lib.window.Window;
 
 public abstract class BaseController {
     private Activity mActivity;
+    private Window mPreWindow;
 
-    public void setActivity(Activity activity){
+    public void setActivity(Activity activity) {
         mActivity = activity;
     }
 
-    protected void pushWindow(Window window){
-        mActivity.getFragmentManager()
+    protected void pushWindow(Window window) {
+        pushWindow(window, true);
+    }
+
+    protected void pushWindow(Window window, boolean rememberPre) {
+        FragmentTransaction transaction = mActivity.getFragmentManager()
                 .beginTransaction()
-                .replace(android.R.id.content, window)
-                .addToBackStack(window.getStackTag())
-                .commit();
+                .replace(android.R.id.content, window);
+        if (rememberPre) {
+            String tag = mPreWindow == null?null:mPreWindow.getStackTag();
+            transaction.addToBackStack(tag);
+            mPreWindow =window;
+        }
+        transaction.commit();
     }
 
     protected boolean popWindow() {
         FragmentManager manager = mActivity.getFragmentManager();
-        if (manager.getBackStackEntryCount() == 0){
+        if (manager.getBackStackEntryCount() == 0) {
             return false;
-        }else{
+        } else {
             manager.popBackStack();
             return true;
         }
