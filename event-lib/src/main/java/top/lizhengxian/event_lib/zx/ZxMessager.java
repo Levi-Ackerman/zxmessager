@@ -10,6 +10,7 @@ import java.lang.reflect.Method;
 
 import top.lizhengxian.event_lib.Config;
 import top.lizhengxian.event_lib.IContacts;
+import top.lizhengxian.event_lib.anno.Thread;
 import top.lizhengxian.event_lib.interf.FieldRunnable;
 
 public class ZxMessager {
@@ -50,7 +51,7 @@ public class ZxMessager {
     public static Object post(int id, Object data) {
         final Method method = getInstance().mParser.getMethod(id);
         final Object ownObj = getInstance().mParser.getController(id);
-        int threadType = getInstance().mParser.getThreadType(id);
+        Thread threadType = getInstance().mParser.getThreadType(id);
         FieldRunnable runnable = new FieldRunnable() {
             @Override
             public void run() {

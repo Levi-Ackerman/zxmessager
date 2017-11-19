@@ -23,7 +23,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -34,9 +33,10 @@ import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 import top.lizhengxian.event_lib.BaseController;
-import top.lizhengxian.event_lib.DescriptionInfo;
+import top.lizhengxian.event_lib.Description;
 import top.lizhengxian.event_lib.IContacts;
 import top.lizhengxian.event_lib.anno.Subscribe;
+import top.lizhengxian.event_lib.anno.Thread;
 
 import static top.lizhengxian.processor.EventProcessor.SUBSCRIBE;
 
@@ -75,20 +75,23 @@ public class EventProcessor extends AbstractProcessor {
                 .map(method -> (ExecutableElement) method)
                 .forEach(this::initDesc);
 
-        FieldSpec map = FieldSpec.builder(ParameterizedTypeName.get(HashMap.class, Integer.class, DescriptionInfo.class), FIELD_MAP)
+        FieldSpec map = FieldSpec.builder(ParameterizedTypeName.get(HashMap.class, Integer.class, Description.class), FIELD_MAP)
                 .addModifiers(Modifier.PRIVATE)
                 .build();
         MethodSpec.Builder constructorBuilder = MethodSpec.constructorBuilder().addModifiers(Modifier.PUBLIC);
         constructorBuilder.addCode(FIELD_MAP + " = new HashMap<>();\n");
-        mDescs.forEach(desc ->
-                constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,%d,\"%s\",\"%s\",\"%s\"))",
-                        FIELD_MAP, desc.id, DescriptionInfo.class.getCanonicalName(), desc.id, desc.threadType, desc.className, desc.methodName, desc.paramName)));
-
+        mDescs.forEach(desc -> {
+            String threadName = Thread.class.getCanonicalName()+"."+desc.threadName;
+            String ownClass = desc.className+".class";
+            String paramClass = desc.paramName == null?"null":desc.paramName+".class";
+            constructorBuilder.addStatement(String.format(Locale.US, "%s.put(%d,new %s(%d,%s,%s,\"%s\",%s))",
+                    FIELD_MAP, desc.id, Description.class.getCanonicalName(), desc.id, threadName, ownClass, desc.methodName, paramClass));
+        });
 
         MethodSpec getContactMapMethod = MethodSpec.methodBuilder("getContactsMap")
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .returns(ParameterizedTypeName.get(Map.class, Integer.class, DescriptionInfo.class))
+                .returns(ParameterizedTypeName.get(Map.class, Integer.class, Description.class))
                 .addCode("return " + FIELD_MAP + ";\n").build();
         TypeSpec indexClass = TypeSpec.classBuilder(GENERATE_CLASS_NAME)
                 .addModifiers(Modifier.PUBLIC, Modifier.FINAL)
@@ -116,7 +119,7 @@ public class EventProcessor extends AbstractProcessor {
         List<? extends VariableElement> params = method.getParameters();
         String paramName;
         if (params.size() == 0) {
-            paramName = "";
+            paramName = null;
         } else if (params.size() == 1) {
             TypeMirror mirror = params.get(0).asType();
             paramName = mirror.toString();
@@ -124,10 +127,10 @@ public class EventProcessor extends AbstractProcessor {
             throw new RuntimeException("@Subscribe can only use for method with none or only 1 parameter");
         }
 
-        TypeMirror ctrlMirror =  method.getEnclosingElement().asType();
+        TypeMirror ctrlMirror = method.getEnclosingElement().asType();
         TypeMirror baseCtrlTypeMirror = mElementUtils.getTypeElement(BaseController.class.getCanonicalName()).asType();
-        if(!mTypeUtils.isAssignable(ctrlMirror,baseCtrlTypeMirror)){
-            mMessager.printMessage(Diagnostic.Kind.ERROR,String.format(Locale.US,"%s is not subclass of %s",ctrlMirror.toString(),baseCtrlTypeMirror.toString()));
+        if (!mTypeUtils.isAssignable(ctrlMirror, baseCtrlTypeMirror)) {
+            mMessager.printMessage(Diagnostic.Kind.ERROR, String.format(Locale.US, "%s is not subclass of %s", ctrlMirror.toString(), baseCtrlTypeMirror.toString()));
         }
         String className = ctrlMirror.toString();
 
@@ -135,7 +138,7 @@ public class EventProcessor extends AbstractProcessor {
         DescriptionInfo desc = new DescriptionInfo();
         desc.paramName = paramName;
         desc.id = subscribe.id();
-        desc.threadType = subscribe.thread();
+        desc.threadName = subscribe.thread().name();
         desc.className = className;
         desc.methodName = method.getSimpleName().toString();
         mDescs.add(desc);

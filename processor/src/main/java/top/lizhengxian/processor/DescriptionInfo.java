@@ -1,9 +1,9 @@
-package top.lizhengxian.event_lib;
+package top.lizhengxian.processor;
 
 
 public class DescriptionInfo {
     public int id;
-    public int threadType;
+    public String threadName;
     public String className;
     public String methodName;
     public String paramName;
@@ -11,9 +11,9 @@ public class DescriptionInfo {
     public DescriptionInfo() {
     }
 
-    public DescriptionInfo(int id,int threadType, String className, String methodName, String paramName) {
+    public DescriptionInfo(int id, String threadType, String className, String methodName, String paramName) {
         this.id = id;
-        this.threadType = threadType;
+        this.threadName = threadType;
         this.className = className;
         this.methodName = methodName;
         this.paramName = paramName;
@@ -23,7 +23,7 @@ public class DescriptionInfo {
     public String toString() {
         return "DescriptionInfo{" +
                 "id=" + id +
-                ", threadType=" + threadType +
+                ", threadName=" + threadName +
                 ", className='" + className + '\'' +
                 ", methodName='" + methodName + '\'' +
                 ", paramName='" + paramName + '\'' +

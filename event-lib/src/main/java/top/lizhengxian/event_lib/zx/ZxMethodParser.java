@@ -10,42 +10,25 @@ import java.util.HashMap;
 import java.util.Map;
 
 import top.lizhengxian.event_lib.BaseController;
-import top.lizhengxian.event_lib.DescriptionInfo;
+import top.lizhengxian.event_lib.Description;
 import top.lizhengxian.event_lib.IContacts;
+import top.lizhengxian.event_lib.anno.Thread;
 
 class ZxMethodParser {
 
-    private Map<String, Class> mClass;
-    private Map<Integer, DescriptionInfo> mDescInfo;
+    private Map<Integer, Description> mDesc;
     private SparseArray<Method> mMethod;
     private SparseArray<BaseController> mControllers;
     private Activity mActivity;
 
     ZxMethodParser() {
-        mClass = new HashMap<>();
-        mDescInfo = new HashMap<>();
+        mDesc = new HashMap<>();
         mMethod = new SparseArray<>();
         mControllers = new SparseArray<>();
     }
 
-    private Class getClass(String className) {
-        if (TextUtils.isEmpty(className)){
-            return null;
-        }
-        Class clazz = mClass.get(className);
-        if (clazz == null) {
-            try {
-                clazz = Class.forName(className);
-                mClass.put(className, clazz);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return clazz;
-    }
-
     void withContact(IContacts contacts) {
-        mDescInfo.putAll(contacts.getContactsMap());
+        mDesc.putAll(contacts.getContactsMap());
     }
     void withActivity(Activity activity){
         mActivity = activity;
@@ -54,10 +37,10 @@ class ZxMethodParser {
     Method getMethod(int id) {
         Method method = mMethod.get(id);
         if (method == null) {
-            DescriptionInfo info = mDescInfo.get(id);
+            Description info = mDesc.get(id);
             try {
-                Class ownClass = getClass(info.className);
-                Class argClass = getClass(info.paramName);
+                Class ownClass = info.ownClass;
+                Class argClass = info.paramClass;
                 if (argClass == null){
                     method = ownClass.getMethod(info.methodName);
                 }else {
@@ -78,7 +61,7 @@ class ZxMethodParser {
                 if (mActivity == null){
                     throw new RuntimeException("Set the activity instance first!");
                 }
-                controller = (BaseController) getClass(mDescInfo.get(id).className).newInstance();
+                controller = (BaseController) mDesc.get(id).ownClass.newInstance();
                 controller.setActivity(mActivity);
                 mControllers.put(id, controller);
             } catch (InstantiationException e) {
@@ -90,7 +73,7 @@ class ZxMethodParser {
         return controller;
     }
 
-    public int getThreadType(int id) {
-        return mDescInfo.get(id).threadType;
+    public Thread getThreadType(int id) {
+        return mDesc.get(id).threadType;
     }
 }

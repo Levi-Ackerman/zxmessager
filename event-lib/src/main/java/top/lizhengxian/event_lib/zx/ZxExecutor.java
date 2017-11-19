@@ -29,21 +29,21 @@ public class ZxExecutor {
     private Executor mBackgroundExecutor;
     private Executor mIOExecutor;
 
-    public static void execute(int threadType, Runnable runnable) {
+    public static void execute(Thread threadType, Runnable runnable) {
         if (runnable == null) {
             return;
         }
         switch (threadType) {
-            case Thread.SYNC:
+            case SYNC:
                 runnable.run();
                 break;
-            case Thread.BACKGROUD:
+            case BACKGROUD:
                 getInstance().mBackgroundExecutor.execute(runnable);
                 break;
-            case Thread.MAIN:
+            case MAIN:
                 getInstance().mMainHandler.post(runnable);
                 break;
-            case Thread.IO:
+            case IO:
                 getInstance().mIOExecutor.execute(runnable);
                 break;
         }
