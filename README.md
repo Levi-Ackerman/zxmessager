@@ -12,8 +12,8 @@ allprojects {
 **Step 2**. Add the dependency
 ```
 dependencies {
-    compile 'com.github.lizhengxian1991.zxmessager:event-lib:0.0.2'
-    annotationProcessor 'com.github.lizhengxian1991.zxmessager:processor:0.0.2'
+    compile 'com.github.lizhengxian1991.zxmessager:event-lib:0.0.4'
+    annotationProcessor 'com.github.lizhengxian1991.zxmessager:processor:0.0.4'
 }
 ```
 ## Todo
