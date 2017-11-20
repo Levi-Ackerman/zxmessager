@@ -2,6 +2,7 @@ package top.lizhengxian.event_lib.zx;
 
 
 import android.app.Activity;
+import android.content.Context;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,9 @@ public class ZxMessager {
 
     private Config mConfig;
     private ZxMethodParser mParser;
+    public static Context getContext(){
+        return getInstance().mConfig.getBaseActivity();
+    }
 
     public static void init(Activity activity, IContacts contacts) {
         getInstance().mParser.withContact(contacts);
@@ -52,6 +56,9 @@ public class ZxMessager {
     }
 
     public static Object post(int id, Object data) {
+        if (!getInstance().mParser.isSubscribed(id)){
+            return null;
+        }
         if (debuggable()) {
             check(id, data);
         }

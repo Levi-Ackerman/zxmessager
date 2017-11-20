@@ -9,10 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-public abstract class Window extends Fragment implements IWindow {
+import top.lizhengxian.event_lib.zx.ZxMessager;
+
+public abstract class Window extends LinearLayout implements IWindow {
     private View mContentView;
     private View mTitleView;
-    private LinearLayout mRootLayout;
     private final String mId;
 
     public abstract View onCreateContent();
@@ -20,25 +21,17 @@ public abstract class Window extends Fragment implements IWindow {
     public abstract View onCreateTitle();
 
     protected Window() {
+        super(ZxMessager.getContext());
         mId = WindowUtil.genStackTag();
-    }
-
-    @Override
-    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        if (mRootLayout == null) {
-            mTitleView = onCreateTitle();
-            mContentView = onCreateContent();
-            mRootLayout = new LinearLayout(getContext());
-            mRootLayout.setOrientation(LinearLayout.VERTICAL);
-            if (mTitleView != null) {
-                mRootLayout.addView(mTitleView);
-            }
-            if (mContentView != null) {
-                mRootLayout.addView(mContentView);
-            }
+        mTitleView = onCreateTitle();
+        mContentView = onCreateContent();
+        setOrientation(LinearLayout.VERTICAL);
+        if (mTitleView != null) {
+            addView(mTitleView);
         }
-        return mRootLayout;
+        if (mContentView != null) {
+            addView(mContentView);
+        }
     }
 
     public View getContentView() {
@@ -47,10 +40,6 @@ public abstract class Window extends Fragment implements IWindow {
 
     public View getTitleView() {
         return mTitleView;
-    }
-
-    protected Context getContext() {
-        return getActivity();
     }
 
     @Override

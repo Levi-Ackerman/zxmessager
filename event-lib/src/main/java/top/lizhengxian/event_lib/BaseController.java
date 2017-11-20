@@ -4,12 +4,15 @@ package top.lizhengxian.event_lib;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.view.ViewGroup;
+
+import java.util.Stack;
 
 import top.lizhengxian.event_lib.window.Window;
 
 public abstract class BaseController {
     private Activity mActivity;
-    private Window mPreWindow;
+    private static Stack<Window> mWindowStack = new Stack<>();
 
     public void setActivity(Activity activity) {
         mActivity = activity;
@@ -20,24 +23,20 @@ public abstract class BaseController {
     }
 
     protected void pushWindow(Window window, boolean rememberPre) {
-        FragmentTransaction transaction = mActivity.getFragmentManager()
-                .beginTransaction()
-                .replace(android.R.id.content, window);
+        ViewGroup content = (ViewGroup) mActivity.findViewById(android.R.id.content);
+        content.addView(window, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         if (rememberPre) {
-            String tag = mPreWindow == null?null:mPreWindow.getStackTag();
-            transaction.addToBackStack(tag);
-            mPreWindow =window;
+            mWindowStack.push(window);
         }
-        transaction.commit();
     }
 
     protected boolean popWindow() {
-        FragmentManager manager = mActivity.getFragmentManager();
-        if (manager.getBackStackEntryCount() == 0) {
+        if (mWindowStack.empty()) {
             return false;
-        } else {
-            manager.popBackStack();
-            return true;
         }
+        Window window = mWindowStack.pop();
+        ViewGroup content = (ViewGroup) mActivity.findViewById(android.R.id.content);
+        content.removeView(window);
+        return true;
     }
 }

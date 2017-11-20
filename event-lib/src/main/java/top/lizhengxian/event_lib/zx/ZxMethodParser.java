@@ -79,4 +79,8 @@ class ZxMethodParser {
     public ThreadMode getThreadType(int id) {
         return mDesc.get(id).mThreadMode;
     }
+
+    public boolean isSubscribed(int id){
+        return mDesc.get(id) != null;
+    }
 }
