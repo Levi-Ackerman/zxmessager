@@ -12,8 +12,23 @@ allprojects {
 **Step 2**. Add the dependency
 ```
 dependencies {
-    compile 'com.github.lizhengxian1991.zxmessager:event-lib:0.0.4'
-    annotationProcessor 'com.github.lizhengxian1991.zxmessager:processor:0.0.4'
+    compile 'com.github.lizhengxian1991.zxmessager:event-lib:1.0.0'
+    annotationProcessor 'com.github.lizhengxian1991.zxmessager:processor:1.0.0'
+}
+```
+**Step 2**. Set the IndexPackage and enable includeCompileClasspath
+```
+android {
+    ...
+    defaultConfig {
+        ...
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ IndexPackage : '<your package name>' ]
+                includeCompileClasspath = true
+            }
+        }
+    }
 }
 ```
 ## Todo
