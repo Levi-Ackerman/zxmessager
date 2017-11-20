@@ -8,3 +8,4 @@
     5. 一对多Notify
     ~~ 6. int 用 Integer代替 ~~
     ~~ 7. DebugMode输出日志 ~~
+    8. 接入jit pack
