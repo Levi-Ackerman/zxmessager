@@ -1,8 +1,8 @@
 apply plugin: 'java-library'
-apply plugin: 'idea'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group='com.github.lizhengxian1991'
+apply plugin: 'idea'
 configurations{
     provided
 }
@@ -25,5 +25,7 @@ sourceSets {
 idea {
     module {
         scopes.PROVIDED.plus += [configurations.provided]
+        downloadJavadoc = true
+        downloadSources = true
     }
 }

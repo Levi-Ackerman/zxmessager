@@ -1,14 +1,32 @@
 apply plugin: 'java-library'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'idea'
 
 group='com.github.lizhengxian1991'
+configurations{
+    provided
+}
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.github.lizhengxian1991.zxmessager:event-lib:0.0.2'
-//    implementation project(':event-lib')
+    provided project(':event-lib')
     implementation 'com.google.auto.service:auto-service:1.0-rc2'
     implementation 'com.squareup:javapoet:1.9.0'
 }
 
 sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
+sourceSets {
+    main {
+        compileClasspath += configurations.provided
+        java {
+            srcDir 'src/main/java'
+        }
+    }
+}
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.provided]
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
