@@ -1,3 +1,21 @@
+## Usage
+**Step 1**. Add the JitPack repository to your build file
+Add it in your root build.gradle at the end of repositories:
+```
+	allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+```
+**Step 2**. Add the dependency
+```
+	dependencies {
+		compile 'com.github.lizhengxian1991.ZxMessager:event-lib:0.0.2'
+        annotationProcessor 'com.github.lizhengxian1991.ZxMessager:processor:0.0.2'
+	}
+```
 ## todo
 下一步：
 
