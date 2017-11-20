@@ -19,9 +19,18 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven { url 'https://jitpack.io' }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+def getPropertyFromLocalProperties(key) {
+    File file = rootProject.file('local.properties');
+    if (file.exists()) {
+        Properties properties = new Properties();
+        properties.load(file.newDataInputStream());
+        return properties.getProperty(key)
+    }
 }
