@@ -4,16 +4,13 @@ package top.lizhengxian.event_lib;
 import android.app.Activity;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.view.ViewGroup;
-
-import java.util.Stack;
 
 import top.lizhengxian.event_lib.window.IUICallback;
 import top.lizhengxian.event_lib.window.Window;
 
 public abstract class BaseController implements IUICallback{
     private Activity mActivity;
-    private static Stack<Window> mWindowStack = new Stack<>();
+    private Window mPreWindow;
 
     public void setActivity(Activity activity) {
         mActivity = activity;
@@ -24,20 +21,24 @@ public abstract class BaseController implements IUICallback{
     }
 
     protected void pushWindow(Window window, boolean rememberPre) {
-        ViewGroup content = (ViewGroup) mActivity.findViewById(android.R.id.content);
-        content.addView(window, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        FragmentTransaction transaction = mActivity.getFragmentManager()
+                .beginTransaction()
+                .replace(android.R.id.content, window);
         if (rememberPre) {
-            mWindowStack.push(window);
+            String tag = mPreWindow == null?null:mPreWindow.getStackTag();
+            transaction.addToBackStack(tag);
+            mPreWindow =window;
         }
+        transaction.commit();
     }
 
     protected boolean popWindow() {
-        if (mWindowStack.empty()) {
+        FragmentManager manager = mActivity.getFragmentManager();
+        if (manager.getBackStackEntryCount() == 0) {
             return false;
+        } else {
+            manager.popBackStack();
+            return true;
         }
-        Window window = mWindowStack.pop();
-        ViewGroup content = (ViewGroup) mActivity.findViewById(android.R.id.content);
-        content.removeView(window);
-        return true;
     }
 }

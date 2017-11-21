@@ -1,15 +1,18 @@
 package top.lizhengxian.event_lib.window;
 
 
-import android.view.KeyEvent;
+import android.app.Fragment;
+import android.content.Context;
+import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import top.lizhengxian.event_lib.zx.ZxMessager;
-
-public abstract class Window extends LinearLayout implements IWindow {
+public abstract class Window extends Fragment implements IWindow {
     private View mContentView;
     private View mTitleView;
+    private LinearLayout mRootLayout;
     private final String mId;
     private IUICallback mCallback;
 
@@ -17,19 +20,27 @@ public abstract class Window extends LinearLayout implements IWindow {
 
     public abstract View onCreateTitle();
 
-    protected Window(IUICallback callback) {
-        super(ZxMessager.getContext());
-        this.mCallback = callback;
+    protected Window() {
+        super();
         mId = WindowUtil.genStackTag();
-        mTitleView = onCreateTitle();
-        mContentView = onCreateContent();
-        setOrientation(LinearLayout.VERTICAL);
-        if (mTitleView != null) {
-            addView(mTitleView);
+    }
+
+    @Override
+    public final View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        if (mRootLayout == null) {
+            mTitleView = onCreateTitle();
+            mContentView = onCreateContent();
+            mRootLayout = new LinearLayout(getContext());
+            mRootLayout.setOrientation(LinearLayout.VERTICAL);
+            if (mTitleView != null) {
+                mRootLayout.addView(mTitleView);
+            }
+            if (mContentView != null) {
+                mRootLayout.addView(mContentView);
+            }
         }
-        if (mContentView != null) {
-            addView(mContentView);
-        }
+        return mRootLayout;
     }
 
     public View getContentView() {
@@ -40,18 +51,16 @@ public abstract class Window extends LinearLayout implements IWindow {
         return mTitleView;
     }
 
+    protected Context getContext() {
+        return getActivity();
+    }
+
     @Override
     public String getStackTag() {
         return mId;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN){
-            if (mCallback!=null){
-                return mCallback.onBackPressed();
-            }
-        }
-        return false;
+    public void setCallback(IUICallback callback) {
+        mCallback = callback;
     }
 }

@@ -6,5 +6,4 @@ package top.lizhengxian.signal.base;
 
 public class ID {
     public static final int START = 0;
-    public static final int BACK_PRESSED = 1;
 }

@@ -4,7 +4,6 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
-import top.lizhengxian.event_lib.window.IUICallback;
 import top.lizhengxian.event_lib.window.Window;
 import top.lizhengxian.signal.R;
 
@@ -13,10 +12,6 @@ import top.lizhengxian.signal.R;
  */
 
 public class HomeWindow extends Window {
-
-    public HomeWindow(IUICallback callback) {
-        super(callback);
-    }
 
     @Override
     public View onCreateContent() {

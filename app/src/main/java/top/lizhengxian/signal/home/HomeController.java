@@ -15,7 +15,7 @@ public class HomeController extends BaseController {
     @Subscribe(id = ID.START)
     public BaseController start() {
         Log.e("lee..", "sha mo");
-//        pushWindow(new HomeWindow(this),false);
+        pushWindow(new HomeWindow(),false);
         return this;
     }
 
