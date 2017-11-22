@@ -12,7 +12,6 @@ import top.lizhengxian.signal.R;
  */
 
 public class HomeWindow extends Window {
-
     @Override
     public View onCreateContent() {
         TextView textView = new TextView(getContext());

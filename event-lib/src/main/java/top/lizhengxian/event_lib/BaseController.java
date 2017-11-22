@@ -35,10 +35,18 @@ public abstract class BaseController implements IUICallback{
     protected boolean popWindow() {
         FragmentManager manager = mActivity.getFragmentManager();
         if (manager.getBackStackEntryCount() == 0) {
+            mActivity.finish();
+            System.exit(0);
             return false;
         } else {
             manager.popBackStack();
             return true;
         }
+    }
+
+    @Override
+    public boolean onBackPressed() {
+        popWindow();
+        return true;
     }
 }

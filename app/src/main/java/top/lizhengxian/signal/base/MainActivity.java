@@ -8,8 +8,6 @@ import top.lizhengxian.event_lib.window.Window;
 import top.lizhengxian.event_lib.zx.ZxMessager;
 import top.lizhengxian.signal.BuildConfig;
 import top.lizhengxian.signal.Contacts;
-import top.lizhengxian.signal.home.HomeController;
-import top.lizhengxian.signal.home.HomeWindow;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,10 +16,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ZxMessager.init(this, new Contacts());
         ZxMessager.setDebuggable(BuildConfig.DEBUG);
-        HomeController controller = (HomeController) ZxMessager.post(ID.START);
-//        Window window = new HomeWindow(controller);
-//        controller.setHomeWindow(window);
-//        setContentView(window);
+        ZxMessager.post(ID.START);
         Log.e("lee..","hello");
+    }
+
+    @Override
+    public void onBackPressed() {
+        Window curWindow = (Window) getFragmentManager().findFragmentById(android.R.id.content);
+        curWindow.onBackPressed();
     }
 }

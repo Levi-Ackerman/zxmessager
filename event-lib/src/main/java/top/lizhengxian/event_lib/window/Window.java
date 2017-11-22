@@ -63,4 +63,10 @@ public abstract class Window extends Fragment implements IWindow {
     public void setCallback(IUICallback callback) {
         mCallback = callback;
     }
+
+    public void onBackPressed() {
+        if (mCallback!=null){
+            mCallback.onBackPressed();
+        }
+    }
 }
