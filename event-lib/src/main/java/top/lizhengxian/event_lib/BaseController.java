@@ -9,7 +9,7 @@ import top.lizhengxian.event_lib.window.IUICallback;
 import top.lizhengxian.event_lib.window.Window;
 
 public abstract class BaseController implements IUICallback{
-    private Activity mActivity;
+    protected Activity mActivity;
     private Window mPreWindow;
 
     public void setActivity(Activity activity) {
@@ -42,6 +42,10 @@ public abstract class BaseController implements IUICallback{
             manager.popBackStack();
             return true;
         }
+    }
+
+    public Activity getContext(){
+        return mActivity;
     }
 
     @Override
